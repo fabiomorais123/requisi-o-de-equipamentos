@@ -27,18 +27,43 @@ function mostrar(autenticado, email = "") {
 }
 
 // 1) Login com Microsoft
-$("btn-login").addEventListener("click", async () => {
+const ERROS = {
+  "auth/popup-blocked": "O browser bloqueou a janela de login. Permite popups para este site e tenta outra vez.",
+  "auth/popup-closed-by-user": "Fechaste a janela de login antes de terminar.",
+  "auth/cancelled-popup-request": "Já existe uma janela de login aberta. Fecha-a e tenta outra vez.",
+  "auth/unauthorized-domain": "O domínio " + location.hostname + " não está autorizado. Adiciona-o em Firebase → Authentication → Settings → Authorized domains.",
+  "auth/operation-not-allowed": "O provider Microsoft não está ativado em Firebase → Authentication → Sign-in method.",
+  "auth/invalid-api-key": "A apiKey em js/firebase-config.js está errada ou por preencher.",
+  "auth/api-key-not-valid": "A apiKey em js/firebase-config.js está errada ou por preencher.",
+  "auth/internal-error": "Erro de configuração Microsoft/Azure (Client ID, Client Secret ou URI de redirecionamento). Vê a janela do login e a consola (F12).",
+  "auth/invalid-credential": "A Microsoft recusou o pedido. Confirma Client ID, Client Secret (usa o Value, não o Secret ID) e o tenant.",
+  "auth/account-exists-with-different-credential": "Este email já está associado a outro método de login no Firebase."
+};
+
+if (location.protocol === "file:") {
+  aviso($("login-msg"), "Abriste o ficheiro diretamente. Publica no GitHub Pages ou usa um servidor local (por exemplo, Live Server no VS Code).", "error");
+}
+
+$("btn-login").addEventListener("click", async (ev) => {
   aviso($("login-msg"), "");
+  const botao = ev.currentTarget;
   const provider = new OAuthProvider("microsoft.com");
+  provider.addScope("openid");
+  provider.addScope("email");
+  provider.addScope("profile");
   provider.setCustomParameters({ prompt: "select_account", ...(TENANT_ID && { tenant: TENANT_ID }) });
+  botao.disabled = true;
   try {
     await signInWithPopup(auth, provider);
   } catch (e) {
-    console.error(e);
-    aviso($("login-msg"), "Não foi possível iniciar sessão (" + e.code + "). Verifica se o popup não foi bloqueado e tenta outra vez.", "error");
+    console.error("Erro de login:", e.code, e.message);
+    aviso($("login-msg"), (ERROS[e.code] || "Não foi possível iniciar sessão.") + " [" + e.code + "]", "error");
+  } finally {
+    botao.disabled = false;
   }
 });
 $("btn-logout").addEventListener("click", () => signOut(auth));
+window.appCarregou = true; // sinal para o diagnóstico do index.html
 
 // 2) Estado de autenticação + verificação da whitelist (authorizedUsers)
 onAuthStateChanged(auth, async (user) => {

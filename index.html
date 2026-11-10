@@ -62,6 +62,24 @@
     </div>
   </main>
 
-  <script type="module" src="js/app.js"></script>
+  <script>
+    // Diagnóstico: mostra na página porque é que o login não responde
+    (function () {
+      var msg = document.getElementById("login-msg");
+      function erro(t) { msg.textContent = t; msg.dataset.type = "error"; msg.hidden = false; }
+      if (location.protocol === "file:") {
+        erro("Abriste o ficheiro com duplo clique (file://). Os módulos JavaScript não funcionam assim: usa o GitHub Pages ou um servidor local (Live Server).");
+      }
+      window.addEventListener("error", function (e) {
+        erro("Erro de JavaScript: " + e.message + (e.filename ? " (" + e.filename.split("/").pop() + ")" : ""));
+      });
+      setTimeout(function () {
+        if (!window.appCarregou && location.protocol !== "file:") {
+          erro("O js/app.js não carregou. Confirma que as pastas js e css estão no repositório com estes nomes exatos e abre a consola (F12) para ver o erro.");
+        }
+      }, 4000);
+    })();
+  </script>
+  <script type="module" src="js/app.js?v=2"></script>
 </body>
 </html>
