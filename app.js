@@ -3,7 +3,7 @@ import { getAuth, OAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { getFirestore, doc, getDoc, addDoc, collection, query, where, onSnapshot, serverTimestamp }
   from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { firebaseConfig, TENANT_ID } from "./firebase-config.js";
+import { firebaseConfig, TENANT_ID } from "./firebase-config.js?v=4";
 
 const auth = getAuth(initializeApp(firebaseConfig));
 const db = getFirestore();

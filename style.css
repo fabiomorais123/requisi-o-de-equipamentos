@@ -11,6 +11,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; } /* sem isto, display:grid/flex anula o atributo hidden */
 body {
   margin: 0; background: var(--fundo); color: var(--texto);
   font: 16px/1.5 "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
