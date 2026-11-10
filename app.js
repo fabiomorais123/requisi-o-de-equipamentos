@@ -33,8 +33,8 @@ const ERROS = {
   "auth/cancelled-popup-request": "Já existe uma janela de login aberta. Fecha-a e tenta outra vez.",
   "auth/unauthorized-domain": "O domínio " + location.hostname + " não está autorizado. Adiciona-o em Firebase → Authentication → Settings → Authorized domains.",
   "auth/operation-not-allowed": "O provider Microsoft não está ativado em Firebase → Authentication → Sign-in method.",
-  "auth/invalid-api-key": "A apiKey em js/firebase-config.js está errada ou por preencher.",
-  "auth/api-key-not-valid": "A apiKey em js/firebase-config.js está errada ou por preencher.",
+  "auth/invalid-api-key": "A apiKey em firebase-config.js está errada ou por preencher.",
+  "auth/api-key-not-valid": "A apiKey em firebase-config.js está errada ou por preencher.",
   "auth/internal-error": "Erro de configuração Microsoft/Azure (Client ID, Client Secret ou URI de redirecionamento). Vê a janela do login e a consola (F12).",
   "auth/invalid-credential": "A Microsoft recusou o pedido. Confirma Client ID, Client Secret (usa o Value, não o Secret ID) e o tenant.",
   "auth/account-exists-with-different-credential": "Este email já está associado a outro método de login no Firebase."
@@ -44,7 +44,14 @@ if (location.protocol === "file:") {
   aviso($("login-msg"), "Abriste o ficheiro diretamente. Publica no GitHub Pages ou usa um servidor local (por exemplo, Live Server no VS Code).", "error");
 }
 
+
+const configPorPreencher = Object.values(firebaseConfig).some((v) => String(v).includes("COLA_AQUI") || String(v).includes("O-TEU-PROJETO"));
+if (configPorPreencher) {
+  aviso($("login-msg"), "Falta preencher o firebase-config.js com a configuração do teu projeto (valores COLA_AQUI / O-TEU-PROJETO).", "error");
+}
+
 $("btn-login").addEventListener("click", async (ev) => {
+  if (configPorPreencher) return;
   aviso($("login-msg"), "");
   const botao = ev.currentTarget;
   const provider = new OAuthProvider("microsoft.com");

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Requisição de equipamentos · EPBJC</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="topo">
@@ -75,11 +75,11 @@
       });
       setTimeout(function () {
         if (!window.appCarregou && location.protocol !== "file:") {
-          erro("O js/app.js não carregou. Confirma que as pastas js e css estão no repositório com estes nomes exatos e abre a consola (F12) para ver o erro.");
+          erro("O app.js não carregou. Confirma que app.js, firebase-config.js e style.css estão na mesma pasta do index.html, com estes nomes exatos, e abre a consola (F12).");
         }
       }, 4000);
     })();
   </script>
-  <script type="module" src="js/app.js?v=2"></script>
+  <script type="module" src="app.js?v=3"></script>
 </body>
 </html>
