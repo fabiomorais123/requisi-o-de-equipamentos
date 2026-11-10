@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Requisição de equipamentos · EPBJC</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topo">
+    <h1>Requisição de equipamentos</h1>
+    <div id="sessao" hidden>
+      <span id="user-email"></span>
+      <button id="btn-logout" class="btn btn-sec" type="button">Terminar sessão</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="login" class="painel">
+      <h2>Entra com a conta da escola</h2>
+      <p>Usa o email institucional (po0000@alunos.epbjc.pt) para pedir e acompanhar equipamentos.</p>
+      <button id="btn-login" class="btn" type="button">Entrar com Microsoft</button>
+      <p id="login-msg" class="aviso" hidden></p>
+    </section>
+
+    <div id="app" class="grelha" hidden>
+      <section class="painel">
+        <h2>Novo pedido</h2>
+        <form id="form-req">
+          <label>Nome do requisitante
+            <input id="requisitante" required maxlength="80" autocomplete="name">
+          </label>
+          <label>Equipamento
+            <select id="equipamento" required>
+              <option value="">Escolhe um equipamento</option>
+              <option>Portátil</option>
+              <option>Rato</option>
+              <option>Teclado</option>
+              <option>Projetor</option>
+              <option>Cabo HDMI</option>
+              <option>Auscultadores</option>
+              <option>Extensão elétrica</option>
+              <option>Adaptador USB-C</option>
+            </select>
+          </label>
+          <label>Devolução prevista
+            <input id="devolucao" type="date" required>
+          </label>
+          <label>Observações <small>(opcional)</small>
+            <textarea id="observacoes" rows="3" maxlength="300"></textarea>
+          </label>
+          <button class="btn" type="submit">Enviar pedido</button>
+          <p id="form-msg" class="aviso" hidden></p>
+        </form>
+      </section>
+
+      <section class="painel">
+        <h2>Os meus pedidos</h2>
+        <p id="vazio" class="vazio" hidden>Ainda não fizeste nenhum pedido. Preenche o formulário para começar.</p>
+        <ul id="lista" class="lista"></ul>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

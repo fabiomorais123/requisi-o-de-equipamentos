@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function entrou() { return request.auth != null; }
+    function viaMicrosoft() { return request.auth.token.firebase.sign_in_provider == 'microsoft.com'; }
+    function meuEmail() { return request.auth.token.email.lower(); }
+
+    // Email na whitelist (authorizedUsers) com active == true
+    function autorizado() {
+      return entrou() && viaMicrosoft() && request.auth.token.email != null
+        && exists(/databases/$(database)/documents/authorizedUsers/$(meuEmail()))
+        && get(/databases/$(database)/documents/authorizedUsers/$(meuEmail())).data.active == true;
+    }
+
+    // Admin = existe um documento admins/<UID>
+    function admin() {
+      return entrou() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Cada utilizador só lê o seu próprio documento da whitelist; ninguém escreve a partir da app
+    match /authorizedUsers/{email} {
+      allow read: if entrou() && email == meuEmail();
+      allow write: if false;
+    }
+
+    match /admins/{uid} {
+      allow read: if entrou() && uid == request.auth.uid;
+      allow write: if false;
+    }
+
+    match /requisicoes/{id} {
+      allow read: if autorizado() && (resource.data.uid == request.auth.uid || admin());
+
+      allow create: if autorizado()
+        && request.resource.data.keys().hasOnly(['uid', 'email', 'requisitante', 'codigo', 'equipamento',
+             'dataPedido', 'devolucaoPrevista', 'estado', 'observacoes', 'criadoEm'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == meuEmail()
+        && request.resource.data.estado == 'Pendente'
+        && request.resource.data.criadoEm == request.time
+        && request.resource.data.requisitante is string && request.resource.data.requisitante.size() <= 80
+        && request.resource.data.equipamento is string && request.resource.data.equipamento.size() <= 60
+        && request.resource.data.observacoes is string && request.resource.data.observacoes.size() <= 300;
+
+      // Só o admin muda o estado (Aprovado, Entregue, Devolvido, Recusado)
+      allow update: if admin();
+      allow delete: if false;
+    }
+
+    match /{outro=**} {
+      allow read, write: if false;
+    }
+  }
+}
